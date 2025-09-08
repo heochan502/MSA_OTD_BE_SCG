@@ -2,6 +2,8 @@ package com.otd.otd_msa_back_gateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.web.reactive.config.EnableWebFlux;
 
 
 /*
@@ -25,7 +27,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
     - com.green.scg2.configuration.filter 모든 응답처리를 UTF-8로 처리
  */
 
+@ConfigurationPropertiesScan
 @SpringBootApplication
+@EnableWebFlux
+
 public class OtdMsaBackGatewayApplication {
 
     public static void main(String[] args) {
