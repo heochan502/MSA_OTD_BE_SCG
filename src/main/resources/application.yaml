@@ -1,0 +1,44 @@
+constants:
+  jwt:
+    issuer: otd@green.com
+    schema: Bearer
+
+    claim-key: signedUser
+
+    header-key: Authorization
+    secret-key: DaeguGreenArtAcademyClass502RoomForProjectOneTwoDayFighting
+
+    access-token-cookie-name: access-token
+
+
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8081/eureka
+
+
+server:
+  port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+spring:
+  application:
+    name: OTD
+  config:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: user
+              url: lb://PROJECT-OTD
+              predicates:
+                - Path=/api/OTD/user/**, /pic/profile/**
+                -
+
+
