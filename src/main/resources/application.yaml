@@ -1,6 +1,6 @@
 constants:
   jwt:
-    issuer: otd@green.com
+    issuer: otd@otd.com
     schema: Bearer
 
     claim-key: signedUser
@@ -30,16 +30,16 @@ server:
 spring:
   application:
     name: OTD_Gateway
-  config:
+  cloud:
     gateway:
       server:
         webflux:
           routes:
             - id: user
-              url: lb://PROJECT-OTD
+              uri: lb://PROJECT-OTD
               predicates:
                 - Path=/api/OTD/user/**, /pic/profile/**
-                -
+
 
   jackson:
     default-property-inclusion: non_null

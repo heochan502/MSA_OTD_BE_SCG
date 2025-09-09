@@ -1,4 +1,4 @@
-package com.otd.otd_msa_back_gateway.constants;
+package com.otd.otd_msa_back_gateway.configuration.constants;
 
 
 import lombok.Getter;
@@ -13,7 +13,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class ConstJwt {
     private final String issuer;
     private final String schema;
-    private final String bererFormat;
+    private final String bearerFormat;
 
     private final String claimKey;
     private final String headerKey;
