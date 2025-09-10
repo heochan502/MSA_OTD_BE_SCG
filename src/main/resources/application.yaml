@@ -29,14 +29,14 @@ server:
 
 spring:
   application:
-    name: OTD_Gateway
+    name: OTD-Gateway
   cloud:
     gateway:
       server:
         webflux:
           routes:
             - id: user
-              uri: lb://PROJECT-OTD
+              uri: lb://OTD-USER
               predicates:
                 - Path=/api/OTD/user/**, /pic/profile/**
 
