@@ -9,6 +9,6 @@ import java.util.List;
 @Getter
 @RequiredArgsConstructor
 public class JwtUser {
-    private final String signedUserId;
+    private final Long signedUserId;
     private final List<String> roles;
 }

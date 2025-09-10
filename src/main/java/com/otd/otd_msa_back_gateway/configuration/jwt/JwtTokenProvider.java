@@ -1,14 +1,21 @@
 package com.otd.otd_msa_back_gateway.configuration.jwt;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.otd.otd_msa_back_gateway.configuration.constants.ConstJwt;
+import com.otd.otd_msa_back_gateway.configuration.model.JwtUser;
+import com.otd.otd_msa_back_gateway.configuration.model.UserPrincipal;
 import com.otd.otd_msa_back_gateway.configuration.util.MyCookieUtils;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -22,7 +29,7 @@ public class JwtTokenProvider {
     private final MyCookieUtils myCookieUtils;
 
 
-    public JwtTokenProvider(ObjectMapper objectMapper, ConstJwt constJwt, SecretKey secretKey, MyCookieUtils myCookieUtils)
+    public JwtTokenProvider(ObjectMapper objectMapper, ConstJwt constJwt,  MyCookieUtils myCookieUtils)
     {
         this.objectMapper = objectMapper;
         this.constJwt = constJwt;
@@ -32,6 +39,39 @@ public class JwtTokenProvider {
     private String getAccessToken(ServerHttpRequest request) {
         return myCookieUtils.getValue(request, constJwt.getAccessTokenCookieName());
     }
+
+    private Claims getClaims(String token)
+    {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    public JwtUser getJwtUserFromToken(String token)
+    {
+        Claims claims = getClaims(token);
+        String json = claims.get(constJwt.getClaimKey(), String.class);
+        try {
+            return objectMapper.readValue(json, JwtUser.class);
+        }catch (JsonProcessingException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Authentication getAuthentication(ServerHttpRequest request)
+    {
+        String token = getAccessToken(request);
+        log.info("token : {}", token);
+        if(token == null) {return null;}
+
+        JwtUser jwtUser = getJwtUserFromToken(token);
+        UserPrincipal userPrincipal = new UserPrincipal(jwtUser.getSignedUserId(), jwtUser.getRoles());
+        return new UsernamePasswordAuthenticationToken(userPrincipal, null , userPrincipal.getAuthorities());
+    }
+
 
 
 
