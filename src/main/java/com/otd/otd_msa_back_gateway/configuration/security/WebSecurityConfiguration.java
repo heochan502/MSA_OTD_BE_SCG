@@ -72,10 +72,10 @@ public class WebSecurityConfiguration {
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
                 .securityContextRepository(new StatelessWebSessionSecurityContextRepository()) // 세션 사용 안함
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/api/user/", "/api/user/**").authenticated()
                         .pathMatchers("/api/admin").hasAuthority("ADMIN")
                         .pathMatchers(HttpMethod.DELETE,"/api/admin").hasAuthority("ADMIN")
                         /*.pathMatchers("/api/admin/**").hasRole("ADMIN")*/
+//                        .pathMatchers("/api/OTD/user/oauth/**").permitAll() // OAuth 경로 예외 처리
                         .anyExchange().permitAll()
                 )
                 .cors(corsSpec -> corsConfigurationSource())

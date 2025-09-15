@@ -16,7 +16,7 @@ public class MyCookieUtils {
     public String getValue(ServerHttpRequest req, String key)
     {
         List<HttpCookie> cookies = req.getCookies().get(key);
-        if (cookies != null || cookies.isEmpty()) {
+        if (cookies == null || cookies.isEmpty()) {
             return null;
         }
         return cookies.get(0).getValue();

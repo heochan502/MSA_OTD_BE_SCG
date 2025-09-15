@@ -16,11 +16,17 @@ eureka:
     fetch-registry: true
     register-with-eureka: true
     service-url:
-      defaultZone: http://localhost:8881/eureka
+      defaultZone: http://localhost:8081/eureka
 
+  #   status 이름 변경 부분
+  instance:
+    prefer-ip-address: true
+    ip-address: ${server.address}
+    instance-id: ${server.address}:${server.port}
 
 server:
-  port: 8880
+  port: 8080
+  address: localhost
   servlet:
     encoding:
       charset: UTF-8
@@ -29,7 +35,7 @@ server:
 
 spring:
   application:
-    name: OTD-Gateway
+    name: OTD-GATEWAY
   cloud:
     gateway:
       server:
@@ -38,7 +44,8 @@ spring:
             - id: user
               uri: lb://OTD-USER
               predicates:
-                - Path=/api/OTD/user/**, /pic/profile/**
+                - Path=/api/OTD/user/**, /pic/profile/**, /oauth2/authorization/**
+
 
 
   jackson:
