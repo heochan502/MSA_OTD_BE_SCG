@@ -1,0 +1,29 @@
+eureka:
+  client:
+    enabled: false
+
+spring:
+  cloud:
+    kubernetes:
+      discovery:
+        enabled: true
+      reload:
+        enabled: true
+        strategy: refresh
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+          routes:
+            - id: otd-life
+              uri: lb://otd-life
+              predicates:
+                - Path=/api/OTD/life/**
+
+            - id: otd-user
+              uri: lb://otd-user
+              predicates:
+                - Path=/api/OTD/user/**, /pic/profile/**, /oauth2/authorization/**

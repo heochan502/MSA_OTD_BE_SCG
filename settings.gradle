@@ -1,1 +1,2 @@
-rootProject.name = 'OTD_MSA_Back_Gateway'
+//rootProject.name = 'OTD_MSA_Back_Gateway'
+rootProject.name = 'app'
