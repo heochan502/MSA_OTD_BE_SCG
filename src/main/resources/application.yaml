@@ -41,15 +41,14 @@ spring:
       server:
         webflux:
           routes:
-            - id: otd-life
-              uri: lb://otd-life
-              predicates:
-                - Path=/api/OTD/life/**
-
-            - id: otd-user
-              uri: lb://otd-user
+            - id: user
+              uri: lb://OTD-USER
               predicates:
                 - Path=/api/OTD/user/**, /pic/profile/**, /oauth2/authorization/**
+            - id: life
+              uri: lb://OTD-life
+              predicates:
+                - Path=/api/OTD/life/**
 
 
 
