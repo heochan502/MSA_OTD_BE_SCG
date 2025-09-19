@@ -7,13 +7,13 @@ import com.otd.otd_msa_back_gateway.configuration.jwt.TokenAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.context.ServerSecurityContextRepository;
 
@@ -32,41 +32,32 @@ import java.util.List;
 @EnableWebFluxSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfiguration {
-
+    private final Environment environment;
     private final TokenAuthenticationFilter tokenAuthenticationFilter;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
-    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
+        String[] activeProfiles = environment.getActiveProfiles();
 
-        // 1. 인증정보 포함 여부 (쿠키/Authorization 헤더 등)
+        CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
 
-        // 2. 허용할 Origin (출처)
-        configuration.setAllowedOriginPatterns(List.of("*"));
-        // "*" = 모든 도메인 허용 (보안적으로는 위험 → 실제 운영에서는 특정 도메인만 허용해야 함)
-
-        // 3. 허용할 HTTP 메서드
+        if(Arrays.asList(activeProfiles).contains("prod")) {
+            configuration.addAllowedOrigin("https://greenart.n-e.kr");
+        } else {
+            configuration.setAllowedOriginPatterns(List.of("*"));
+        }
         configuration.setAllowedMethods(
-                Arrays.asList("HEAD", "GET", "POST", "PUT", "PATCH", "DELETE")
-        );
-
-        // 4. 허용할 HTTP 헤더
+                Arrays.asList("HEAD", "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
-        // "*" = 모든 요청 헤더 허용
-
-        // 5. 최종적으로 매핑할 경로 등록
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // 모든 경로에 위 규칙 적용
-
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 
     @Bean // 스프링이 메소드 호출을 하고 리턴한 객체의 주소값을 관리한다. (빈등록)
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) throws Exception {
         return http
-
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
@@ -74,11 +65,9 @@ public class WebSecurityConfiguration {
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/api/admin").hasAuthority("ADMIN")
                         .pathMatchers(HttpMethod.DELETE,"/api/admin").hasAuthority("ADMIN")
-                        /*.pathMatchers("/api/admin/**").hasRole("ADMIN")*/
-//                        .pathMatchers("/api/OTD/user/oauth/**").permitAll() // OAuth 경로 예외 처리
                         .anyExchange().permitAll()
                 )
-                .cors(corsSpec -> corsConfigurationSource())
+                .cors(corsSpec -> corsSpec.configurationSource(corsConfigurationSource()))
                 .addFilterAt(tokenAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .exceptionHandling(e -> e.authenticationEntryPoint(authenticationEntryPoint))
                 .build();
