@@ -11,6 +11,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.context.SecurityContext;
@@ -31,12 +32,12 @@ import java.util.List;
 @Configuration
 @EnableWebFluxSecurity
 @RequiredArgsConstructor
-public class WebSecurityConfiguration {
+public class WebSecurityConfiguration  {
     private final Environment environment;
     private final TokenAuthenticationFilter tokenAuthenticationFilter;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
-    public CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource(){
         String[] activeProfiles = environment.getActiveProfiles();
 
         CorsConfiguration configuration = new CorsConfiguration();
@@ -56,18 +57,20 @@ public class WebSecurityConfiguration {
     }
 
     @Bean // 스프링이 메소드 호출을 하고 리턴한 객체의 주소값을 관리한다. (빈등록)
-    public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) throws Exception {
+    public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http)  throws Exception {
         return http
-                .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
-                .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)// BE - csrf라는 공격이 있는데 공격을 막는 것이 기본으로 활성화 되어 있는데
+                // 세션을 이용한 공격이다. 세션을 어차피 안 쓰니까 비활성화
+                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)  //시큐리티가 제공해주는 인증 처리 -> 사용 안 함
+                .formLogin(ServerHttpSecurity.FormLoginSpec::disable) //시큐리티가 제공해주는 인증 처리 -> 사용 안 함
                 .securityContextRepository(new StatelessWebSessionSecurityContextRepository()) // 세션 사용 안함
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/api/admin").hasAuthority("ADMIN")
                         .pathMatchers(HttpMethod.DELETE,"/api/admin").hasAuthority("ADMIN")
                         .anyExchange().permitAll()
                 )
-                .cors(corsSpec -> corsSpec.configurationSource(corsConfigurationSource()))
+
+                .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource())) // ⭐️⭐️⭐️
                 .addFilterAt(tokenAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .exceptionHandling(e -> e.authenticationEntryPoint(authenticationEntryPoint))
                 .build();

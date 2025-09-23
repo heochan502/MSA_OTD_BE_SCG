@@ -11,18 +11,50 @@ constants:
     access-token-cookie-name: access-token
 
 
+#eureka:
+#  client:
+#    fetch-registry: true
+#    register-with-eureka: true
+#    service-url:
+#      defaultZone: http://localhost:8081/eureka
+#
+#  #   status 이름 변경 부분
+#  instance:
+#    prefer-ip-address: true
+#    ip-address: ${server.address}
+#    instance-id: ${server.address}:${server.port}
+
 eureka:
   client:
-    fetch-registry: true
-    register-with-eureka: true
-    service-url:
-      defaultZone: http://localhost:8081/eureka
+    enabled: false
+#
+#spring:
+#  cloud:
+#    kubernetes:
+#      discovery:
+#        enabled: true
+#      reload:
+#        enabled: true
+#        strategy: refresh
+#    gateway:
+#      server:
+#        webflux:
+#          discovery:
+#            locator:
+#              enabled: true
+#              lower-case-service-id: true
+#          routes:
+#            - id: otd-life
+#              uri: lb://otd-life
+#              predicates:
+#                - Path=/api/OTD/life/**
+#
+#            - id: otd-user
+#              uri: lb://otd-user
+#              predicates:
+#                - Path=/api/user/**, /pic/profile/**, /oauth2/authorization/**, /api/otd/**
+#
 
-  #   status 이름 변경 부분
-  instance:
-    prefer-ip-address: true
-    ip-address: ${server.address}
-    instance-id: ${server.address}:${server.port}
 
 server:
   port: 8080
@@ -41,14 +73,17 @@ spring:
       server:
         webflux:
           routes:
-            - id: user
-              uri: lb://OTD-USER
-              predicates:
-                - Path=/api/OTD/user/**, /pic/profile/**, /oauth2/authorization/**
-            - id: life
-              uri: lb://OTD-life
+            - id: otd-life
+#              uri: lb://otd-life
+              uri : http://localhost:8083
               predicates:
                 - Path=/api/OTD/life/**
+
+            - id: otd-user
+#              uri: lb://otd-user
+              uri : http://localhost:8082
+              predicates:
+                - Path=/api/OTD/user/**, /pic/profile/**, /oauth2/authorization/**
 
 
 
