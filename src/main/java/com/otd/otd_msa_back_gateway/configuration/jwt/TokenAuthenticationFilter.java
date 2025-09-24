@@ -3,12 +3,14 @@ package com.otd.otd_msa_back_gateway.configuration.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.otd.otd_msa_back_gateway.configuration.constants.ConstJwt;
+import com.otd.otd_msa_back_gateway.configuration.model.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 
 import org.springframework.security.core.Authentication;
 
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
 
@@ -18,6 +20,8 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
+
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -34,18 +38,25 @@ public class TokenAuthenticationFilter implements WebFilter {
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         // 요청 정보
         ServerHttpRequest request = exchange.getRequest();
-        log.info("진행중");
         Authentication authentication = jwtTokenProvider.getAuthentication(request);
-        log.info("진행중2");
         log.info("authentication JSON: {}", authentication);
         if(authentication != null) {
             try {
-                String signedUserJson = objectMapper.writeValueAsString(authentication.getPrincipal());
+                UserPrincipal up = (UserPrincipal) authentication.getPrincipal();
+                String userId = String.valueOf(up.getSignedUserId());
+                String rolesCsv = up.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .map(a -> a.startsWith("ROLE_") ? a : "ROLE_" + a) // 안전하게 ROLE_ 프리픽스 보장
+                        .collect(Collectors.joining(","));
+
                 ServerHttpRequest modifiedRequest = request.mutate()
-                        .header(constJwt.getClaimKey(), signedUserJson)
+                        .headers(h -> {
+                            h.set("X-User-Id", userId);
+                            h.set("X-User-Roles", rolesCsv);
+                        }) // 예: "ROLE_USER,ROLE_ADMIN"
                         .build();
                 // 가공된 Principal 데이터 로그 출력
-                log.info("Processed Authentication Principal JSON: {}", signedUserJson);
+                log.info("GW add headers -> X-User-Id={}, X-User-Roles={}", userId, rolesCsv);
 
                 ServerWebExchange modifiedExchange = exchange.mutate()
                         .request(modifiedRequest)

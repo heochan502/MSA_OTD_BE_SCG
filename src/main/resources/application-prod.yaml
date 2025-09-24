@@ -19,14 +19,20 @@ spring:
               lower-case-service-id: true
           routes:
             - id: otd-life
-              uri: lb://otd-life
+              #              uri: lb://otd-life
+              uri : http://localhost:8083
               predicates:
-                - Path=/api/OTD/life/**
+                - Path=/api/OTD/life/**, /api/OTD/life
+                - Path=/api/OTD/meal/**, /api/OTD/meal
+                - Path=/api/OTD/exercise_record/**, /api/OTD/exercise_record
 
             - id: otd-user
-              uri: lb://otd-user
+              #              uri: lb://otd-user
+              uri : http://localhost:8082
               predicates:
-                - Path=/api/OTD/user/**, /pic/profile/**, /oauth2/authorization/**
+                - Path=/api/OTD/user/**, /pic/profile/**, /oauth2/authorization/**,/api/OTD/email/**
+
+
 constants:
   jwt:
     issuer: otd@otd.com #토큰 발행자
