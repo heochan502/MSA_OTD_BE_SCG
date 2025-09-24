@@ -69,7 +69,6 @@ public class WebSecurityConfiguration  {
                         .pathMatchers(HttpMethod.DELETE,"/api/admin").hasAuthority("ADMIN")
                         .anyExchange().permitAll()
                 )
-
                 .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource())) // ⭐️⭐️⭐️
                 .addFilterAt(tokenAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .exceptionHandling(e -> e.authenticationEntryPoint(authenticationEntryPoint))

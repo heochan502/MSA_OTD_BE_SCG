@@ -27,3 +27,15 @@ spring:
               uri: lb://otd-user
               predicates:
                 - Path=/api/OTD/user/**, /pic/profile/**, /oauth2/authorization/**
+constants:
+  jwt:
+    issuer: otd@otd.com #토큰 발행자
+    bearer-format: JWT
+
+    claim-key: signedUser
+    header-key: Authorization
+    secret-key: DaeguGreenArtAcademyClass502RoomForProjectOneTwoDayFighting
+
+    domain: greenart.n-e.kr
+
+    access-token-cookie-name: access-token

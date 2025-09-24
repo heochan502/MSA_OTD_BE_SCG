@@ -9,7 +9,7 @@ constants:
     secret-key: DaeguGreenArtAcademyClass502RoomForProjectOneTwoDayFighting
 
     access-token-cookie-name: access-token
-
+    domain: greenart.n-e.kr
 
 #eureka:
 #  client:
@@ -77,14 +77,13 @@ spring:
 #              uri: lb://otd-life
               uri : http://localhost:8083
               predicates:
-                - Path=/api/OTD/life/**
+                - Path=/api/OTD/life/**, /api/OTD/meal/**, /api/OTD/exercise_record/**
 
             - id: otd-user
 #              uri: lb://otd-user
               uri : http://localhost:8082
               predicates:
-                - Path=/api/OTD/user/**, /pic/profile/**, /oauth2/authorization/**
-
+                - Path=/api/OTD/user/**, /pic/profile/**, /oauth2/authorization/**,/api/OTD/email/**
 
 
   jackson:
