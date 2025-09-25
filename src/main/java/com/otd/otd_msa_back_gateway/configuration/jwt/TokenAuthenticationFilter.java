@@ -21,6 +21,7 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -44,19 +45,20 @@ public class TokenAuthenticationFilter implements WebFilter {
             try {
                 UserPrincipal up = (UserPrincipal) authentication.getPrincipal();
                 String userId = String.valueOf(up.getSignedUserId());
-                String rolesCsv = up.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .map(a -> a.startsWith("ROLE_") ? a : "ROLE_" + a) // 안전하게 ROLE_ 프리픽스 보장
+                String rolesEnumCsv = up.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority) // ROLE_USER, ROLE_ADMIN ...
+                        .map(TokenAuthenticationFilter::toEnumName)
+                        .filter(Objects::nonNull)
                         .collect(Collectors.joining(","));
 
                 ServerHttpRequest modifiedRequest = request.mutate()
                         .headers(h -> {
-                            h.set("X-User-Id", userId);
-                            h.set("X-User-Roles", rolesCsv);
-                        }) // 예: "ROLE_USER,ROLE_ADMIN"
+                            h.set("X-User-Id", String.valueOf(up.getSignedUserId()));
+                            h.set("X-User-Roles", rolesEnumCsv); // ← enum 이름으로 전송
+                        })
                         .build();
                 // 가공된 Principal 데이터 로그 출력
-                log.info("GW add headers -> X-User-Id={}, X-User-Roles={}", userId, rolesCsv);
+                log.info("GW add headers -> X-User-Id={}, X-User-Roles={}", userId, rolesEnumCsv);
 
                 ServerWebExchange modifiedExchange = exchange.mutate()
                         .request(modifiedRequest)
@@ -72,6 +74,17 @@ public class TokenAuthenticationFilter implements WebFilter {
             }
         }
         return chain.filter(exchange);
+    }
+
+    private static String toEnumName(String authority) {
+        String key = authority.startsWith("ROLE_") ? authority.substring(5) : authority; // USER, SOCIAL, ...
+        return switch (key) {
+            case "USER"   -> "USER_1";
+            case "SOCIAL" -> "USER_2";
+            case "MANAGER"-> "MANAGER";
+            case "ADMIN"  -> "ADMIN";
+            default       -> null; // 알 수 없는 권한은 버림(또는 예외)
+        };
     }
 }
 
