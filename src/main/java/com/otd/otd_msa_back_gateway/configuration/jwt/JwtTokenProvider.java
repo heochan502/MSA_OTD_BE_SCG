@@ -91,22 +91,19 @@ public class JwtTokenProvider { //토큰 생성/파싱/검증
     public Authentication getAuthentication(ServerHttpRequest request) {
         try {
             String token = getAccessToken(request);
-            log.info("token(preview): {}", token != null ? token.split("\\.")[0] : "null");
+            if (!looksLikeJwt(token)) return null;
 
-            if (!looksLikeJwt(token)) {
-                log.info("토큰이 없거나 JWT 포맷이 아님 → 인증 생략");
-                return null;
-            }
-
-            JwtUser jwtUser = getJwtUserFromToken(token); // 위에서 방어적으로 파싱
-            UserPrincipal principal = new UserPrincipal(jwtUser.getSignedUserId(), jwtUser.getRoles());
-
-            return new UsernamePasswordAuthenticationToken(
-                    principal, null, principal.getAuthorities());
+            JwtUser jwtUser = getJwtUserFromToken(token);
+            var principal = new UserPrincipal(jwtUser.getSignedUserId(), jwtUser.getRoles());
+            return new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            log.info("GW: access 토큰 만료");
+            return null;
+        } catch (io.jsonwebtoken.JwtException e) {
+            log.info("GW: access 토큰 무효/위조: {}", e.getMessage());
+            return null;
         } catch (Exception e) {
-            // 게이트웨이에서 500로 터뜨리지 말고 인증만 생략
-            log.warn("GW JWT 파싱 실패 → 인증 생략 (사유: {})", e.getMessage());
+            log.warn("GW: JWT 파싱 실패: {}", e.getMessage());
             return null;
         }
-    }
-}
+}}
