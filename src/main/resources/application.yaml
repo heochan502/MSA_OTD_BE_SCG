@@ -79,14 +79,13 @@ spring:
 #              uri: lb://otd-life
               uri : http://localhost:8083
               predicates:
-                - Path=/api/OTD/life/**, /api/OTD/meal/**, /api/OTD/exercise_record/**
+                - Path=/api/OTD/life/**, /api/OTD/life ,/api/OTD/meal/**, /api/OTD/meal,/api/OTD/exercise_record/**, /api/OTD/exercise_record/**
 
             - id: otd-user
 #              uri: lb://otd-user
               uri : http://localhost:8082
               predicates:
-                - Path=/api/OTD/user/**, /pic/profile/**, /oauth2/authorization/**,/api/OTD/email/**, 
-                 /api/OTD/challenge/** , /home/green/download/challenge/**
+                - Path=/api/OTD/user/**, /api/OTD/profile/**, /oauth2/authorization/**,/api/OTD/email/**,/api/OTD/challenge/** , /home/green/download/challenge/**
 
 
   jackson:
