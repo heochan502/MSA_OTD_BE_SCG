@@ -67,13 +67,20 @@ public class TokenAuthenticationFilter implements WebFilter {
                 SecurityContext context = new SecurityContextImpl(authentication);
 
                 return chain.filter(modifiedExchange)
-                        .contextWrite(ReactiveSecurityContextHolder.withSecurityContext(Mono.just(context)))                        ;
+                        .doOnSuccess(v ->
+                                log.info("GW response status -> {}", modifiedExchange.getResponse().getStatusCode()))
+                        .doOnError(ex ->
+                                log.error("GW pipeline error", ex));
             } catch (Exception e) {
                 log.error("Error while processing authentication principal", e);
                 //request.setAttribute("exception", e);
             }
         }
-        return chain.filter(exchange);
+        return  chain.filter(exchange)
+                .doOnSuccess(v ->
+                        log.info("GW response status -> {}", exchange.getResponse().getStatusCode()))
+                .doOnError(ex ->
+                        log.error("GW pipeline error", ex));
     }
 
     private static String toEnumName(String authority) {

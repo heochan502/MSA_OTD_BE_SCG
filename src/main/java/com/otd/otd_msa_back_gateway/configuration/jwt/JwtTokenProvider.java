@@ -48,44 +48,65 @@ public class JwtTokenProvider { //토큰 생성/파싱/검증
     }
 
     public JwtUser getJwtUserFromToken(String token) {
-        Claims claims = getClaims(token);
-        String json = claims.get(constJwt.getClaimKey(), String.class);
-        try {
-            return objectMapper.readValue(json, JwtUser.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+        Claims claims = getClaims(token); // JwtException 던짐
+        Object raw = claims.get(constJwt.getClaimKey());
+
+        log.debug("GW claim[{}] type={}, preview={}",
+                constJwt.getClaimKey(),
+                raw == null ? "null" : raw.getClass().getName(),
+                safePreview(String.valueOf(raw)));
+        if (raw == null) {
+            throw new IllegalArgumentException("JWT claim '" + constJwt.getClaimKey() + "' is missing");
         }
+
+        try {
+            if (raw instanceof String s) {
+                // JSON 문자열인지 가볍게 확인
+                String trimmed = s.trim();
+                if ((trimmed.startsWith("{") && trimmed.endsWith("}")) ||
+                        (trimmed.startsWith("\"") && trimmed.endsWith("\""))) {
+                    return objectMapper.readValue(trimmed, JwtUser.class);
+                } else {
+                    // JSON이 아닌 평문 → 에러
+                    throw new IllegalArgumentException("Claim is not a JSON string: " + safePreview(trimmed));
+                }
+            } else {
+                // 발급 측에서 Map/Pojo로 넣었을 수 있음
+                return objectMapper.convertValue(raw, JwtUser.class);
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Failed to parse claim to JwtUser: " + e.getMessage(), e);
+        }
+    }
+
+    private static String safePreview(String v) {
+        if (v == null) return "null";
+        return v.length() > 32 ? v.substring(0, 32) + "..." : v;
+    }
+
+    private static boolean looksLikeJwt(String token) {
+        return token != null && token.matches("^[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+$");
     }
 
     public Authentication getAuthentication(ServerHttpRequest request) {
         try {
             String token = getAccessToken(request);
-            log.info("token: {}", token);
+            log.info("token(preview): {}", token != null ? token.split("\\.")[0] : "null");
 
-            if (token == null || token.isBlank()) {
-                log.info("토큰이 비어있습니다. 인증 생략.");
+            if (!looksLikeJwt(token)) {
+                log.info("토큰이 없거나 JWT 포맷이 아님 → 인증 생략");
                 return null;
             }
 
-            JwtUser jwtUser = getJwtUserFromToken(token);
-            log.info("jwtUser: id={}, roles={}",
-                    jwtUser != null ? jwtUser.getSignedUserId() : null,
-                    jwtUser != null ? jwtUser.getRoles() : null);
-
-            UserPrincipal userPrincipal =
-                    new UserPrincipal(jwtUser.getSignedUserId(), jwtUser.getRoles());
-
-            if (userPrincipal.getAuthorities() == null) {
-                log.warn("userPrincipal.getAuthorities() == null");
-            } else {
-                log.info("authorities: {}", userPrincipal.getAuthorities());
-            }
+            JwtUser jwtUser = getJwtUserFromToken(token); // 위에서 방어적으로 파싱
+            UserPrincipal principal = new UserPrincipal(jwtUser.getSignedUserId(), jwtUser.getRoles());
 
             return new UsernamePasswordAuthenticationToken(
-                    userPrincipal, null, userPrincipal.getAuthorities());
+                    principal, null, principal.getAuthorities());
         } catch (Exception e) {
-            log.error("getAuthentication 내부 예외", e);
-            // 여기서 null을 리턴하면 호출부 흐름은 계속 진행됨
+            // 게이트웨이에서 500로 터뜨리지 말고 인증만 생략
+            log.warn("GW JWT 파싱 실패 → 인증 생략 (사유: {})", e.getMessage());
             return null;
-        }}
+        }
+    }
 }
