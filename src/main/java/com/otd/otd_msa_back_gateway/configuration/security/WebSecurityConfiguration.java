@@ -37,6 +37,7 @@ public class WebSecurityConfiguration  {
     private final TokenAuthenticationFilter tokenAuthenticationFilter;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
+    @Bean
     public CorsConfigurationSource corsConfigurationSource(){
         String[] activeProfiles = environment.getActiveProfiles();
 
@@ -44,7 +45,7 @@ public class WebSecurityConfiguration  {
         configuration.setAllowCredentials(true);
 
         if(Arrays.asList(activeProfiles).contains("prod")) {
-            configuration.addAllowedOrigin("https://greenart.n-e.kr");
+            configuration.addAllowedOrigin("https://greenart.n-e.kr , http://localhost:5173, http://localhost:5174 ");
         } else {
             configuration.setAllowedOriginPatterns(List.of("*"));
         }
