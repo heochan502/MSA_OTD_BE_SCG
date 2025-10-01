@@ -35,8 +35,10 @@ public class TokenAuthenticationFilter implements WebFilter {
     private final ConstJwt constJwt;                 // issuer, 쿠키명, 헤더키 등 설정 보유
 
 
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+        log.info("!!!!!!!!!!!!!!!!!!!!!!");
         // 요청 정보
         ServerHttpRequest request = exchange.getRequest();
         Authentication authentication = jwtTokenProvider.getAuthentication(request);
