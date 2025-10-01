@@ -1,3 +1,12 @@
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
 spring:
   cloud:
     kubernetes:
@@ -23,6 +32,3 @@ spring:
               uri: lb://otd-user
               predicates:
                 - Path=/api/OTD/user/**, /api/OTD/user/reissue/**,/api/OTD/profile/**, /oauth2/authorization/**,/api/OTD/email/**,/api/OTD/challenge/** , /home/green/download/challenge/**, /files/**, /profile/** , /api/OTD/admin/**
-
-
-
