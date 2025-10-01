@@ -9,7 +9,7 @@ constants:
     secret-key: DaeguGreenArtAcademyClass502RoomForProjectOneTwoDayFighting
 
     access-token-cookie-name: access-token
-    domain: greenart.n-e.kr
+
 
 #eureka:
 #  client:
@@ -24,9 +24,7 @@ constants:
 #    ip-address: ${server.address}
 #    instance-id: ${server.address}:${server.port}
 
-eureka:
-  client:
-    enabled: false
+
 #
 #spring:
 #  cloud:
@@ -68,21 +66,19 @@ server:
 spring:
   application:
     name: OTD-GATEWAY
-
-
   cloud:
     gateway:
       server:
         webflux:
           routes:
             - id: otd-life
-#              uri: lb://otd-life
+#              uri: lb://OTD-LIFE
               uri : http://localhost:8083
               predicates:
                 - Path=/api/OTD/life/**, /api/OTD/life ,/api/OTD/meal/**, /api/OTD/meal,/api/OTD/exercise_record/**, /api/OTD/exercise_record/** ,  /api/OTD/community/** , /api/OTD/exercise/** , /api/OTD/body_composition/**
 
             - id: otd-user
-#              uri: lb://otd-user
+#              uri: lb://OTD-USER
               uri : http://localhost:8082
               predicates:
                 - Path=/api/OTD/user/**, /api/OTD/user/reissue/**,/api/OTD/profile/**, /oauth2/authorization/**,/api/OTD/email/**,/api/OTD/challenge/** , /home/green/download/challenge/**, /files/**, /profile/** , /api/OTD/admin/**

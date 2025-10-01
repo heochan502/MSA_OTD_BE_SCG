@@ -1,7 +1,3 @@
-eureka:
-  client:
-    enabled: false
-
 spring:
   cloud:
     kubernetes:
@@ -29,15 +25,4 @@ spring:
                 - Path=/api/OTD/user/**, /api/OTD/user/reissue/**,/api/OTD/profile/**, /oauth2/authorization/**,/api/OTD/email/**,/api/OTD/challenge/** , /home/green/download/challenge/**, /files/**, /profile/** , /api/OTD/admin/**
 
 
-constants:
-  jwt:
-    issuer: otd@otd.com #토큰 발행자
-    bearer-format: JWT
 
-    claim-key: signedUser
-    header-key: Authorization
-    secret-key: DaeguGreenArtAcademyClass502RoomForProjectOneTwoDayFighting
-
-    domain: greenart.n-e.kr
-
-    access-token-cookie-name: access-token
