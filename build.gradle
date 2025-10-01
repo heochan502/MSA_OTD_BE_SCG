@@ -29,6 +29,8 @@ ext {
 
 dependencies {
     // 필수 포함
+
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     implementation 'org.springframework.cloud:spring-cloud-starter-kubernetes-client'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.cloud:spring-cloud-starter-gateway-server-webflux'
@@ -44,8 +46,6 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-jackson:0.12.6'
 
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.cloud:spring-cloud-starter-gateway-server-webflux'
-
 
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
