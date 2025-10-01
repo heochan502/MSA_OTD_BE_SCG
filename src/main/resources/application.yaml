@@ -56,7 +56,6 @@ constants:
 
 server:
   port: 8080
-  address: localhost
   servlet:
     encoding:
       charset: UTF-8
