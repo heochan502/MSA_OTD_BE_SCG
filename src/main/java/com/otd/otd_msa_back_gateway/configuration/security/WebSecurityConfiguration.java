@@ -11,7 +11,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.context.SecurityContext;
@@ -58,7 +57,7 @@ public class WebSecurityConfiguration  {
     }
 
     @Bean // 스프링이 메소드 호출을 하고 리턴한 객체의 주소값을 관리한다. (빈등록)
-    public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http)  throws Exception {
+    public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)// BE - csrf라는 공격이 있는데 공격을 막는 것이 기본으로 활성화 되어 있는데
                 // 세션을 이용한 공격이다. 세션을 어차피 안 쓰니까 비활성화
@@ -74,8 +73,6 @@ public class WebSecurityConfiguration  {
                 .addFilterAt(tokenAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .exceptionHandling(e -> e.authenticationEntryPoint(authenticationEntryPoint))
                 .build();
-
-
     }
 
     //https://gose-kose.tistory.com/27
