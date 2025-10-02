@@ -45,7 +45,7 @@ public class WebSecurityConfiguration  {
         configuration.setAllowCredentials(true);
 
         if(Arrays.asList(activeProfiles).contains("prod")) {
-            configuration.addAllowedOrigin("https://greenart.n-e.kr ");
+            configuration.addAllowedOrigin("https://greenart.n-e.kr");
         } else {
             configuration.setAllowedOriginPatterns(List.of("*"));
         }
