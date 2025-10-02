@@ -84,6 +84,5 @@ public class WebSecurityConfiguration  {
 
         @Override
         public Mono<SecurityContext> load(ServerWebExchange exchange) {return EMPTY_CONTEXT;}
-
     }
 }
