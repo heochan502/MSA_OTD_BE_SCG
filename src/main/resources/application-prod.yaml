@@ -26,9 +26,9 @@ spring:
             - id: otd-life
               uri: lb://otd-life
               predicates:
-                - Path=/api/OTD/life/**, /api/OTD/life ,/api/OTD/meal/**, /api/OTD/meal,/api/OTD/exercise_record/**, /api/OTD/exercise_record/** ,  /api/OTD/community/** , /api/OTD/exercise/** , /api/OTD/body_composition/**
+                - Path=/api/OTD/life/**,/api/OTD/meal/**,/api/OTD/exercise_record/**,/api/OTD/community/**,/api/OTD/exercise/**,/api/OTD/body_composition/**,/api/OTD/waterIntake/**,/api/OTD/admin2/**
 
             - id: otd-user
               uri: lb://otd-user
               predicates:
-                - Path=/api/OTD/user/**, /api/OTD/user/reissue/**,/api/OTD/profile/**, /oauth2/authorization/**,/api/OTD/email/**,/api/OTD/challenge/** , /home/green/download/challenge/**, /files/**, /profile/** , /api/OTD/admin/**
+                - Path=/api/OTD/user/**,/api/OTD/user/reissue/**,/api/OTD/profile/**,/oauth2/authorization/**,/api/OTD/email/**,/api/OTD/challenge/**,/home/green/download/challenge/**,/files/**,/profile/**,/api/OTD/admin/**,/api/OTD/pointshop/**,/api/OTD/pointshop/add/**,/api/OTD/pointshop/list/**- Path=/api/OTD/user/**,/api/OTD/user/reissue/**,/api/OTD/profile/**,/oauth2/authorization/**,/api/OTD/email/**,/api/OTD/challenge/**,/home/green/download/challenge/**,/files/**,/profile/**,/api/OTD/admin/**,/api/OTD/pointshop/**,/api/OTD/pointshop/add/**,/api/OTD/pointshop/list/**,/api/OTD/terms/**
