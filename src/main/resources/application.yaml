@@ -74,7 +74,7 @@ spring:
 #              uri: lb://OTD-LIFE
               uri : http://localhost:8083
               predicates:
-                - Path=/api/OTD/life/**,/api/OTD/meal/**,/api/OTD/exercise_record/**,/api/OTD/community/**,/api/OTD/exercise/**,/api/OTD/body_composition/**,/api/OTD/waterIntake/**,/api/OTD/admin2/**,/api/OTD/notifications/**
+                - Path=/api/OTD/life/**,/api/OTD/meal/**,/api/OTD/exercise_record/**,/api/OTD/community/**,/api/OTD/exercise/**,/api/OTD/body_composition/**,/api/OTD/waterIntake/**,/api/OTD/admin2/**,/api/OTD/notifications/**,/static/community/**
 
             - id: otd-user
 #              uri: lb://OTD-USER
