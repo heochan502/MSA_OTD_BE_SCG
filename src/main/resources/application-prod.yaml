@@ -26,7 +26,7 @@ spring:
             - id: otd-life
               uri: lb://otd-life
               predicates:
-                - Path=/api/OTD/life/**,/api/OTD/meal/**,/api/OTD/exercise_record/**,/api/OTD/community/**,/api/OTD/exercise/**,/api/OTD/body_composition/**,/api/OTD/waterIntake/**,/api/OTD/admin2/**
+                - Path=/api/OTD/life/**,/api/OTD/meal/**,/api/OTD/exercise_record/**,/api/OTD/community/**,/api/OTD/exercise/**,/api/OTD/body_composition/**,/api/OTD/waterIntake/**,/api/OTD/admin2/**,/api/OTD/notifications/**,/static/community/**
 
             - id: otd-user
               uri: lb://otd-user
