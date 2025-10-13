@@ -31,5 +31,5 @@ spring:
             - id: otd-user
               uri: lb://otd-user
               predicates:
-                - Path=/api/OTD/user/**,/api/OTD/user/reissue/**,/api/OTD/profile/**,/oauth2/authorization/**,/api/OTD/email/**,/api/OTD/challenge/**,/home/green/download/challenge/**,/files/**,/profile/**,/api/OTD/admin/**,/api/OTD/pointshop/**,api/OTD/terms/**
+                - Path=/api/OTD/user/**,/api/OTD/user/reissue/**,/api/OTD/profile/**,/oauth2/authorization/**,/api/OTD/email/**,/api/OTD/challenge/**,/home/green/download/challenge/**,/files/**,/profile/**,/api/OTD/admin/**,/api/OTD/pointshop/**,/api/OTD/terms/**
 
