@@ -69,10 +69,9 @@ public class TokenAuthenticationFilter implements WebFilter {
                 SecurityContext context = new SecurityContextImpl(authentication);
 
                 return chain.filter(modifiedExchange)
-                        .doOnSuccess(v ->
-                                log.info("GW response status -> {}", modifiedExchange.getResponse().getStatusCode()))
-                        .doOnError(ex ->
-                                log.error("GW pipeline error", ex));
+                        .contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication))
+                        .doOnSuccess(v -> log.info("GW response status -> {}", modifiedExchange.getResponse().getStatusCode()))
+                        .doOnError(ex -> log.error("GW pipeline error", ex));
             } catch (Exception e) {
                 log.error("Error while processing authentication principal", e);
                 //request.setAttribute("exception", e);
