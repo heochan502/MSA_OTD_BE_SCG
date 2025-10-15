@@ -80,7 +80,7 @@ spring:
 #              uri: lb://OTD-USER
               uri : http://localhost:8082
               predicates:
-                - Path=/api/OTD/user/**,/api/OTD/user/reissue/**,/api/OTD/profile/**,/oauth2/authorization/**,/api/OTD/email/**,/api/OTD/challenge/**,/home/green/download/challenge/**,/files/**,/profile/**,/api/OTD/admin/**,/api/OTD/pointshop/**,/api/OTD/terms/**
+                - Path=/api/OTD/user/**,/api/OTD/user/reissue/**,/api/OTD/profile/**,/oauth2/authorization/**,/api/OTD/email/**,/api/OTD/challenge/**,/home/green/download/challenge/**,/files/**,/profile/**,/api/OTD/admin/**,/api/OTD/pointshop/**,/api/OTD/terms/**,/api/OTD/onboarding/**
 
 
   jackson:
